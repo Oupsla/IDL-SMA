@@ -1,27 +1,36 @@
 package agent
 
+import "fmt"
+
+// Agent : represent a particle with a color and a position
 type Agent struct {
-  Color string
-  Position [2]int
+	Color Color
 }
 
+// NewAgent : Empty constructor
 func NewAgent() (*Agent, error) {
-  return &Agent{}, nil
+	return &Agent{
+		Color: Blue,
+	}, nil
 }
 
-func CreateAgent(color string, position [2]int) (*Agent, error) {
-  return &Agent{
-    Color: color,
-    Position: position,
-  }, nil
+// CreateAgent : Create a new agent with specific color
+func CreateAgent(color Color) (*Agent, error) {
+	return &Agent{
+		Color: color,
+	}, nil
 }
 
+func (agent *Agent) String() string {
+	return fmt.Sprintf("Agent with color : %s", agent.Color)
+}
 
+// Update : Update the position of the agent
 func (agent *Agent) Update() {
 
 }
 
-// Process to decide what to do with a limit or collision
+// Decide : Decide what to do with a limit or collision
 func (agent *Agent) Decide() {
 
 }
@@ -29,3 +38,32 @@ func (agent *Agent) Decide() {
 func (agent *Agent) move(direction string) {
 
 }
+
+/* ############# Color enum ##############"" */
+
+// Color type
+type Color int
+
+const (
+	// Blue Color
+	Blue Color = 1 + iota
+	// Red Color
+	Red
+	// Yellow Color
+	Yellow
+	// Green Color
+	Green
+	// White Color
+	White
+)
+
+var colors = [...]string{
+	"Blue",
+	"Red",
+	"Yellow",
+	"Green",
+	"White",
+}
+
+// String returns the English name of the color
+func (m Color) String() string { return colors[m-1] }

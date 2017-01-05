@@ -1,0 +1,19 @@
+{
+    "gridSize": {
+      "x" : 5,
+      "y": 5
+    },
+    "canvasSize": {
+      "x" : 50,
+      "y": 50
+    },
+    "boxSize" : 1,
+    "delay" : 1,
+    "sheduling": 1,
+    "nbTicks" : 1,
+    "showGrid" : true,
+    "trace" : true,
+    "seed" : 123456789,
+    "refresh" : 1,
+    "nbParticles" : 5
+}

@@ -1,12 +1,13 @@
 package main
 
 import (
-  "fmt"
-  "github.com/oupsla/IDL-SMA/sma"
+	"fmt"
+
+	"github.com/Oupsla/IDL-SMA/sma"
 )
 
 func main() {
-  fmt.Println("Starting")
-  
-  sma.Run()
+	fmt.Println("Starting")
+
+	sma.Run()
 }
