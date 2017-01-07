@@ -4,39 +4,34 @@ import "fmt"
 
 // Agent : represent a particle with a color and a position
 type Agent struct {
-	Color Color
+	Identifier string
+	Color      Color
+	X          int
+	Y          int
 }
 
 // NewAgent : Empty constructor
 func NewAgent() (*Agent, error) {
 	return &Agent{
-		Color: Blue,
+		Identifier: "N",
+		Color:      Blue,
+		X:          0,
+		Y:          0,
 	}, nil
 }
 
 // CreateAgent : Create a new agent with specific color
-func CreateAgent(color Color) (*Agent, error) {
+func CreateAgent(identifier string, color Color, x int, y int) (*Agent, error) {
 	return &Agent{
-		Color: color,
+		Identifier: identifier,
+		Color:      color,
+		X:          x,
+		Y:          y,
 	}, nil
 }
 
 func (agent *Agent) String() string {
 	return fmt.Sprintf("Agent with color : %s", agent.Color)
-}
-
-// Update : Update the position of the agent
-func (agent *Agent) Update() {
-
-}
-
-// Decide : Decide what to do with a limit or collision
-func (agent *Agent) Decide() {
-
-}
-
-func (agent *Agent) move(direction string) {
-
 }
 
 /* ############# Color enum ##############"" */

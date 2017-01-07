@@ -3,6 +3,7 @@ package sma
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/Oupsla/IDL-SMA/environment"
 	ui "github.com/gizak/termui"
@@ -13,6 +14,9 @@ var env *environment.Environment
 var showGrid bool
 var canvasX int
 var canvasY int
+var nbTicks int
+var delay int
+var trace bool
 
 // initConfig : Initalize the system
 func initConfig() {
@@ -28,20 +32,29 @@ func initConfig() {
 	}
 
 	fmt.Println("\nConfig found !")
-	gridSizeX := viper.GetInt("gridSize.x")
-	gridSizeY := viper.GetInt("gridSize.Y")
+	gridSizeX := viper.GetInt("grid.x")
+	gridSizeY := viper.GetInt("grid.Y")
+	gridTorrique := viper.GetBool("grid.torrique")
 	nbParticles := viper.GetInt("nbParticles")
 	seed := viper.GetInt64("seed")
 	canvasX = viper.GetInt("canvasSize.x")
 	canvasY = viper.GetInt("canvasSize.Y")
 	showGrid = viper.GetBool("showGrid")
+	delay = viper.GetInt("delay")
+	nbTicks = viper.GetInt("nbTicks")
+	trace = viper.GetBool("trace")
 
-	fmt.Println("gridSizeX = ", gridSizeX)
-	fmt.Println("gridSizeY = ", gridSizeY)
-	fmt.Println("canvasX = ", canvasX)
-	fmt.Println("canvasY = ", canvasY)
-	fmt.Println("nbParticles = ", nbParticles)
-	fmt.Println(" ")
+	if trace {
+		fmt.Println("gridSizeX = ", gridSizeX)
+		fmt.Println("gridSizeY = ", gridSizeY)
+		fmt.Println("gridTorrique = ", gridTorrique)
+		fmt.Println("canvasX = ", canvasX)
+		fmt.Println("canvasY = ", canvasY)
+		fmt.Println("delay (in ms) = ", delay)
+		fmt.Println("nbTicks (0 = infinite) = ", nbTicks)
+		fmt.Println("nbParticles = ", nbParticles)
+		fmt.Println(" ")
+	}
 
 	// Verify grid size
 	if gridSizeX*gridSizeY < nbParticles {
@@ -49,7 +62,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	env, _ = environment.CreateEnvironment(gridSizeX, gridSizeY, nbParticles, seed)
+	env, _ = environment.CreateEnvironment(gridSizeX, gridSizeY, nbParticles, seed, gridTorrique, trace)
 }
 
 // initGUI: initiatize the console gui
@@ -103,9 +116,18 @@ func initGUI() {
 
 // Run : run the world
 func Run() {
-
+	fmt.Println("... Init Config ...")
 	initConfig()
-	initGUI()
+	fmt.Println("... Init GUI ...")
+	//initGUI()
 
 	env.Show()
+	time.Sleep(time.Duration(delay) * time.Millisecond)
+
+	for i := 0; i < nbTicks; i++ {
+		env.Decide()
+		env.Show()
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+	}
+
 }
