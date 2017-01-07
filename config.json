@@ -2,19 +2,19 @@
     "grid": {
       "x" : 5,
       "y": 5,
-      "torrique": false
+      "torrique": true
     },
     "canvasSize": {
       "x" : 50,
       "y": 50
     },
     "boxSize" : 1,
-    "delay" : 1000,
+    "delay" : 3000,
     "sheduling": 1,
-    "nbTicks" : 10,
+    "nbTicks" : 50,
     "showGrid" : true,
     "trace" : true,
     "seed" : 123456789,
     "refresh" : 1,
-    "nbParticles" : 1
+    "nbParticles" : 5
 }

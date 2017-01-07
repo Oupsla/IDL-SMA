@@ -2,7 +2,6 @@ package sma
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"time"
 
@@ -17,6 +16,7 @@ var canvasX int
 var canvasY int
 var nbTicks int
 var delay int
+var trace bool
 
 // initConfig : Initalize the system
 func initConfig() {
@@ -42,16 +42,19 @@ func initConfig() {
 	showGrid = viper.GetBool("showGrid")
 	delay = viper.GetInt("delay")
 	nbTicks = viper.GetInt("nbTicks")
+	trace = viper.GetBool("trace")
 
-	fmt.Println("gridSizeX = ", gridSizeX)
-	fmt.Println("gridSizeY = ", gridSizeY)
-	fmt.Println("gridTorrique = ", gridTorrique)
-	fmt.Println("canvasX = ", canvasX)
-	fmt.Println("canvasY = ", canvasY)
-	fmt.Println("delay (in ms) = ", delay)
-	fmt.Println("nbTicks (0 = infinite) = ", nbTicks)
-	fmt.Println("nbParticles = ", nbParticles)
-	fmt.Println(" ")
+	if trace {
+		fmt.Println("gridSizeX = ", gridSizeX)
+		fmt.Println("gridSizeY = ", gridSizeY)
+		fmt.Println("gridTorrique = ", gridTorrique)
+		fmt.Println("canvasX = ", canvasX)
+		fmt.Println("canvasY = ", canvasY)
+		fmt.Println("delay (in ms) = ", delay)
+		fmt.Println("nbTicks (0 = infinite) = ", nbTicks)
+		fmt.Println("nbParticles = ", nbParticles)
+		fmt.Println(" ")
+	}
 
 	// Verify grid size
 	if gridSizeX*gridSizeY < nbParticles {
@@ -59,7 +62,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	env, _ = environment.CreateEnvironment(gridSizeX, gridSizeY, nbParticles, seed, gridTorrique)
+	env, _ = environment.CreateEnvironment(gridSizeX, gridSizeY, nbParticles, seed, gridTorrique, trace)
 }
 
 // initGUI: initiatize the console gui
@@ -118,21 +121,11 @@ func Run() {
 	fmt.Println("... Init GUI ...")
 	//initGUI()
 
+	env.Show()
+	time.Sleep(time.Duration(delay) * time.Millisecond)
+
 	for i := 0; i < nbTicks; i++ {
-
-		//Shuffle list agent
-		fmt.Println("\n... Shuffle list of agents ... ")
-		for m := range env.AgentList {
-			n := rand.Intn(m + 1)
-			env.AgentList[m], env.AgentList[n] = env.AgentList[n], env.AgentList[m]
-		}
-
-		fmt.Println("... Moving Agents ...\n ")
-
-		for m := range env.AgentList {
-			env.AgentList[m].Decide()
-		}
-
+		env.Decide()
 		env.Show()
 		time.Sleep(time.Duration(delay) * time.Millisecond)
 	}
