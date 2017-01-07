@@ -11,6 +11,7 @@ import (
 type Environment struct {
 	GridX     int
 	GridY     int
+	Torrique  bool
 	Grid      [][]*agent.Agent
 	AgentList []*agent.Agent
 }
@@ -21,7 +22,7 @@ func NewEnvironement() (*Environment, error) {
 }
 
 // CreateEnvironment : Create a new environment and place agent
-func CreateEnvironment(gridX int, gridY int, nbAgent int, randomSeed int64) (*Environment, error) {
+func CreateEnvironment(gridX int, gridY int, nbAgent int, randomSeed int64, torrique bool) (*Environment, error) {
 
 	// Create random generator with the seed
 	sourceRandom := rand.NewSource(randomSeed)
@@ -60,24 +61,23 @@ func CreateEnvironment(gridX int, gridY int, nbAgent int, randomSeed int64) (*En
 		AgentList: agentList,
 		GridX:     gridX,
 		GridY:     gridY,
+		Torrique:  torrique,
 	}, nil
 }
 
 // Show : Print the actual env
 func (environment *Environment) Show() {
-	fmt.Println("Showing env...")
-
 	/* output each array element's value */
 	for i := 0; i < environment.GridX; i++ {
+		lineResult := ""
 		for j := 0; j < environment.GridY; j++ {
-			lineResult := ""
 			if environment.Grid[i][j] == nil {
-				lineResult += " "
+				lineResult += "."
 			} else {
 				lineResult += "X"
 			}
-			fmt.Printf(lineResult)
 		}
+		fmt.Printf(lineResult + "\n")
 	}
 }
 
