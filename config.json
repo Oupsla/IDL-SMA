@@ -9,9 +9,9 @@
       "y": 50
     },
     "boxSize" : 1,
-    "delay" : 3000,
+    "delay" : 2000,
     "sheduling": 1,
-    "nbTicks" : 50,
+    "nbTicks" : 200,
     "showGrid" : true,
     "trace" : true,
     "seed" : 123456789,

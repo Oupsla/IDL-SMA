@@ -49,10 +49,11 @@ func CreateEnvironment(gridX int, gridY int, nbAgent int, randomSeed int64, torr
 		for {
 			x1 := randomGen.Intn(gridX)
 			y1 := randomGen.Intn(gridY)
+			randomDirection := randomGen.Intn(8)
 
 			if grid[y1][x1] == nil {
 
-				a, _ := agent.CreateAgent(strconv.Itoa(i), agent.Blue, x1, y1)
+				a, _ := agent.CreateAgent(strconv.Itoa(i), agent.RandomColor(), x1, y1, randomDirection)
 
 				grid[y1][x1] = a
 				agentList[i] = a
@@ -92,133 +93,143 @@ func (env *Environment) Decide() {
 
 }
 
-func (env *Environment) movingAgent(agent *agent.Agent) {
+func (env *Environment) movingAgent(currentAgent *agent.Agent) {
 
 	// Memorize old position
-	oldX := agent.X
-	oldY := agent.Y
+	oldX := currentAgent.X
+	oldY := currentAgent.Y
 
 	// Remove in the grid
-	env.Grid[agent.Y][agent.X] = nil
+	env.Grid[currentAgent.Y][currentAgent.X] = nil
 
-	// Get new position
-	randomDirection := env.GeneratorRandom.Intn(8)
-	env.newPosition(agent, randomDirection)
+	// Set new position
+	env.newPosition(currentAgent)
 
 	// Testing borders
-	if agent.X >= env.GridX {
+	if currentAgent.X >= env.GridX {
 		if env.Trace {
-			fmt.Printf("%s collission with East \n", agent.Identifier)
+			fmt.Printf("%s collission with East \n", currentAgent.Identifier)
 		}
 		if env.Torrique {
-			agent.X = 0
+			currentAgent.X = 0
 		} else {
-			agent.X = env.GridX - 2
+			currentAgent.X = env.GridX - 2
 		}
 
 	}
 
-	if agent.X < 0 {
+	if currentAgent.X < 0 {
 		if env.Trace {
-			fmt.Printf("%s collission with West \n", agent.Identifier)
+			fmt.Printf("%s collission with West \n", currentAgent.Identifier)
 		}
 		if env.Torrique {
-			agent.X = env.GridX - 1
+			currentAgent.X = env.GridX - 1
 		} else {
-			agent.X = 1
+			currentAgent.X = 1
 		}
 	}
 
-	if agent.Y >= env.GridY {
+	if currentAgent.Y >= env.GridY {
 		if env.Trace {
-			fmt.Printf("%s collission with South \n", agent.Identifier)
+			fmt.Printf("%s collission with South \n", currentAgent.Identifier)
 		}
 		if env.Torrique {
-			agent.Y = 0
+			currentAgent.Y = 0
 		} else {
-			agent.Y = env.GridY - 1
+			currentAgent.Y = env.GridY - 1
 		}
 	}
 
-	if agent.Y < 0 {
+	if currentAgent.Y < 0 {
 		if env.Trace {
-			fmt.Printf("%s collission with North \n", agent.Identifier)
+			fmt.Printf("%s collission with North \n", currentAgent.Identifier)
 		}
 		if env.Torrique {
-			agent.Y = env.GridY - 1
+			currentAgent.Y = env.GridY - 1
 		} else {
-			agent.Y = 1
+			currentAgent.Y = 1
 		}
 	}
 
 	// Testing collisionss
-	if env.Grid[agent.Y][agent.X] != nil {
+	if env.Grid[currentAgent.Y][currentAgent.X] != nil {
 		if env.Trace {
-			fmt.Printf("%s collission \n", agent.Identifier)
+			fmt.Printf("%s collission with %s \n", currentAgent.Identifier, env.Grid[currentAgent.Y][currentAgent.X].Identifier)
 		}
-		env.Grid[oldY][oldX] = agent
-		agent.X = oldX
-		agent.Y = oldY
+
+		// Changing Direction
+		oldDirection := currentAgent.Direction
+		currentAgent.Direction = env.Grid[currentAgent.Y][currentAgent.X].Direction
+		env.Grid[currentAgent.Y][currentAgent.X].Direction = oldDirection
+
+		// Resetting position
+		env.Grid[oldY][oldX] = currentAgent
+		currentAgent.X = oldX
+		currentAgent.Y = oldY
+
+		// Moving agent again
+		env.movingAgent(currentAgent)
+
 	} else {
-		env.Grid[agent.Y][agent.X] = agent
+		env.Grid[currentAgent.Y][currentAgent.X] = currentAgent
 	}
 
 }
 
-func (env *Environment) newPosition(agent *agent.Agent, direction int) {
+func (env *Environment) newPosition(currentAgent *agent.Agent) {
 
-	switch direction {
+	switch currentAgent.Direction {
 	// North
 	case 0:
-		agent.Y--
+		currentAgent.Y--
 		if env.Trace {
-			fmt.Printf("%s moving North \n", agent.Identifier)
+			fmt.Printf("%s moving North \n", currentAgent.Identifier)
 		}
 	// North East
 	case 1:
-		agent.X++
-		agent.Y--
+		currentAgent.X++
+		currentAgent.Y--
 		if env.Trace {
-			fmt.Printf("%s moving North East \n", agent.Identifier)
+			fmt.Printf("%s moving North East \n", currentAgent.Identifier)
 		}
 	// East
 	case 2:
-		agent.X++
+		currentAgent.X++
 		if env.Trace {
-			fmt.Printf("%s moving East \n", agent.Identifier)
+			fmt.Printf("%s moving East \n", currentAgent.Identifier)
 		}
 	// South East
 	case 3:
-		agent.Y++
-		agent.X++
+		currentAgent.Y++
+		currentAgent.X++
 		if env.Trace {
-			fmt.Printf("%s moving South East \n", agent.Identifier)
+			fmt.Printf("%s moving South East \n", currentAgent.Identifier)
 		}
 	// South
 	case 4:
-		agent.Y++
+		currentAgent.Y++
 		if env.Trace {
-			fmt.Printf("%s moving South \n", agent.Identifier)
+			fmt.Printf("%s moving South \n", currentAgent.Identifier)
 		}
 	// South West
 	case 5:
-		agent.Y++
-		agent.X--
+		currentAgent.Y++
+		currentAgent.X--
 		if env.Trace {
-			fmt.Printf("%s moving South West \n", agent.Identifier)
+			fmt.Printf("%s moving South West \n", currentAgent.Identifier)
 		}
 	// West
 	case 6:
-		agent.X--
+		currentAgent.X--
 		if env.Trace {
-			fmt.Printf("%s moving West \n", agent.Identifier)
+			fmt.Printf("%s moving West \n", currentAgent.Identifier)
 		}
 	// North West
 	case 7:
-		agent.Y--
-		agent.X--
+		currentAgent.Y--
+		currentAgent.X--
 		if env.Trace {
-			fmt.Printf("%s moving North West \n", agent.Identifier)
+			fmt.Printf("%s moving North West \n", currentAgent.Identifier)
 		}
 	}
 
@@ -235,7 +246,7 @@ func (env *Environment) Show() {
 				lineResult += "."
 			} else {
 
-				lineResult += env.Grid[i][j].Identifier
+				lineResult += env.Grid[i][j].String()
 			}
 		}
 		fmt.Printf(lineResult + "\n")
